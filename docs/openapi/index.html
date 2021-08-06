@@ -860,7 +860,7 @@ ul.nav-tabs {
       "type" : "string",
       "description" : "The JSON Pointer (https://tools.ietf.org/html/rfc6901) URL to the corresponding version of the schema definition for this facet",
       "format" : "uri",
-      "example" : "https://raw.githubusercontent.com/OpenLineage/OpenLineage/0.0.1/spec/OpenLineage.json#/definitions/BaseFacet"
+      "example" : "https://openlineage.io/spec/0-0-1/OpenLineage.json#/definitions/BaseFacet"
     }
   },
   "description" : "all fields of the base facet are prefixed with _ to avoid name conflicts in facets"
@@ -1062,11 +1062,36 @@ ul.nav-tabs {
   "properties" : {
     "outputFacets" : {
       "type" : "object",
-      "properties" : { },
+      "properties" : {
+        "outputStatistics" : {
+          "$ref" : "#/components/schemas/OutputStatisticsOutputDatasetFacet"
+        }
+      },
       "additionalProperties" : {
         "$ref" : "#/components/schemas/CustomFacet"
       },
       "description" : "The output facets for this dataset"
+    }
+  }
+};
+    defs["OutputStatisticsOutputDatasetFacet"] = {
+  "allOf" : [ {
+    "$ref" : "#/components/schemas/BaseFacet"
+  }, {
+    "$ref" : "#/components/schemas/OutputStatisticsOutputDatasetFacet_allOf"
+  } ]
+};
+    defs["OutputStatisticsOutputDatasetFacet_allOf"] = {
+  "required" : [ "rowCount" ],
+  "type" : "object",
+  "properties" : {
+    "rowCount" : {
+      "type" : "integer",
+      "description" : "The number of rows written to the dataset"
+    },
+    "size" : {
+      "type" : "integer",
+      "description" : "The size in bytes written to the dataset"
     }
   }
 };
@@ -1112,7 +1137,9 @@ ul.nav-tabs {
   "type" : "object",
   "properties" : {
     "runId" : {
-      "type" : "string"
+      "type" : "string",
+      "description" : "The globally unique ID of the run associated with the job.",
+      "format" : "uuid"
     }
   }
 };
@@ -1122,7 +1149,8 @@ ul.nav-tabs {
   "properties" : {
     "runId" : {
       "type" : "string",
-      "description" : "The id of the run, unique relative to the job"
+      "description" : "The globally unique ID of the run associated with the job.",
+      "format" : "uuid"
     },
     "facets" : {
       "type" : "object",
@@ -1142,7 +1170,7 @@ ul.nav-tabs {
   }
 };
     defs["RunEvent"] = {
-  "required" : [ "eventTime", "job", "producer", "run" ],
+  "required" : [ "eventTime", "job", "producer", "run", "schemaURL" ],
   "type" : "object",
   "properties" : {
     "eventType" : {
@@ -1181,6 +1209,12 @@ ul.nav-tabs {
       "description" : "URI identifying the producer of this metadata. For example this could be a git url with a given tag or sha",
       "format" : "uri",
       "example" : "https://github.com/OpenLineage/OpenLineage/blob/v1-0-0/client"
+    },
+    "schemaURL" : {
+      "type" : "string",
+      "description" : "The JSON Pointer (https://tools.ietf.org/html/rfc6901) URL to the corresponding version of the schema definition for this RunEvent",
+      "format" : "uri",
+      "example" : "https://openlineage.io/spec/0-0-1/OpenLineage.json"
     }
   }
 };
@@ -1223,7 +1257,7 @@ ul.nav-tabs {
   }
 };
     defs["SchemaDatasetFacet_allOf_fields"] = {
-  "required" : [ "name", "type" ],
+  "required" : [ "name" ],
   "type" : "object",
   "properties" : {
     "name" : {
@@ -1256,11 +1290,37 @@ ul.nav-tabs {
   "properties" : {
     "type" : {
       "type" : "string",
-      "example" : "git"
+      "description" : "the source control system",
+      "example" : "git|svn"
     },
     "url" : {
       "type" : "string",
-      "format" : "uri"
+      "description" : "the full http URL to locate the file",
+      "format" : "uri",
+      "example" : "https://github.com/MarquezProject/marquez-airflow-quickstart/blob/693e35482bc2e526ced2b5f9f76ef83dec6ec691/dags/dummy_example.py"
+    },
+    "repoUrl" : {
+      "type" : "string",
+      "description" : "the URL to the repository",
+      "example" : "git@github.com:{org}/{repo}.git or https://github.com/{org}/{repo}.git|svn://<your_ip>/<repository_name>"
+    },
+    "path" : {
+      "type" : "string",
+      "description" : "the path in the repo containing the source files",
+      "example" : "path/to/my/dags"
+    },
+    "version" : {
+      "type" : "string",
+      "description" : "the current version deployed (not a branch name, the actual unique version)",
+      "example" : "git: the git sha | Svn: the revision number"
+    },
+    "tag" : {
+      "type" : "string",
+      "description" : "optional tag name"
+    },
+    "branch" : {
+      "type" : "string",
+      "description" : "optional branch name"
     }
   }
 };
