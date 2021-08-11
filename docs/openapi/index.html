@@ -875,6 +875,69 @@ ul.nav-tabs {
     "additionalProperties" : true
   } ]
 };
+    defs["DataQualityMetricsInputDatasetFacet"] = {
+  "type" : "object",
+  "allOf" : [ {
+    "$ref" : "#/components/schemas/BaseFacet"
+  }, {
+    "$ref" : "#/components/schemas/DataQualityMetricsInputDatasetFacet_allOf"
+  } ]
+};
+    defs["DataQualityMetricsInputDatasetFacet_allOf"] = {
+  "required" : [ "columnMetrics" ],
+  "type" : "object",
+  "properties" : {
+    "rowCount" : {
+      "type" : "integer",
+      "description" : "The number of rows evaluated"
+    },
+    "bytes" : {
+      "type" : "integer",
+      "description" : "The size in bytes"
+    },
+    "columnMetrics" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "$ref" : "#/components/schemas/DataQualityMetricsInputDatasetFacet_allOf_columnMetrics"
+      },
+      "description" : "The property key is the column name"
+    }
+  }
+};
+    defs["DataQualityMetricsInputDatasetFacet_allOf_columnMetrics"] = {
+  "type" : "object",
+  "properties" : {
+    "nullCount" : {
+      "type" : "integer",
+      "description" : "The number of null values in this column for the rows evaluated"
+    },
+    "distinctCount" : {
+      "type" : "integer",
+      "description" : "The number of distinct values in this column for the rows evaluated"
+    },
+    "sum" : {
+      "type" : "number",
+      "description" : "The total sum of values in this column for the rows evaluated"
+    },
+    "count" : {
+      "type" : "number",
+      "description" : "The number of values in this column"
+    },
+    "min" : {
+      "type" : "number"
+    },
+    "max" : {
+      "type" : "number"
+    },
+    "quantiles" : {
+      "type" : "object",
+      "additionalProperties" : {
+        "type" : "number"
+      },
+      "description" : "The property key is the quantile. Examples: 0.1 0.25 0.5 0.75 1"
+    }
+  }
+};
     defs["Dataset"] = {
   "required" : [ "name", "namespace" ],
   "type" : "object",
@@ -980,7 +1043,11 @@ ul.nav-tabs {
   "properties" : {
     "inputFacets" : {
       "type" : "object",
-      "properties" : { },
+      "properties" : {
+        "dataQualityMetrics" : {
+          "$ref" : "#/components/schemas/DataQualityMetricsInputDatasetFacet"
+        }
+      },
       "additionalProperties" : {
         "$ref" : "#/components/schemas/CustomFacet"
       },
